@@ -8,6 +8,7 @@ console.log('[NextAuth][DEBUG] Environment variables check:', {
   NODE_ENV: process.env.NODE_ENV,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'NOT_SET',
   VERCEL_URL: process.env.VERCEL_URL || 'NOT_SET',
+  AUTH_TRUST_HOST: process.env.AUTH_TRUST_HOST || 'NOT_SET',
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ? 'SET' : 'NOT_SET',
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? 'SET' : 'NOT_SET',
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? 'SET' : 'NOT_SET'
@@ -18,6 +19,7 @@ const baseUrl = process.env.NEXTAUTH_URL ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
 console.log('[NextAuth][DEBUG] Computed base URL:', baseUrl)
+console.log('[NextAuth][DEBUG] NextAuth will use base URL for OAuth callbacks:', baseUrl)
 console.log('[NextAuth][DEBUG] NextAuth API endpoints will be:', {
   session: `${baseUrl}/api/auth/session`,
   signin: `${baseUrl}/api/auth/signin`,
@@ -36,6 +38,10 @@ export const authOptions: NextAuthOptions = {
     strategy: 'database',
   },
   secret: process.env.NEXTAUTH_SECRET,
+  // Explicitly set the base URL to ensure OAuth callbacks use the correct URL
+  ...(process.env.NEXTAUTH_URL && { 
+    url: process.env.NEXTAUTH_URL 
+  }),
   callbacks: {
     async session({ session, user }) {
       console.log('[NextAuth][DEBUG] Session callback triggered')
