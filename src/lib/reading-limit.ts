@@ -24,9 +24,6 @@ export async function checkDailyReadingStatus(userId: string): Promise<ReadingSt
           gte: startOfToday,
           lte: endOfToday,
         }
-      },
-      include: {
-        book: true
       }
     })
 
@@ -35,7 +32,7 @@ export async function checkDailyReadingStatus(userId: string): Promise<ReadingSt
         hasReadToday: true,
         canRead: false,
         message: 'You have already read your book for today. Come back tomorrow for a new summary!',
-        todayBook: todaySession.book
+        todayBook: { id: todaySession.bookId }
       }
     }
 
