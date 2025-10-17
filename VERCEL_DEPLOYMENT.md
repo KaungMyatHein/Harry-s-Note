@@ -18,7 +18,9 @@ GOOGLE_CLIENT_ID=your-google-client-id-here
 GOOGLE_CLIENT_SECRET=your-google-client-secret-here
 
 # Database - Supabase PostgreSQL
-DATABASE_URL=your-supabase-database-url-here
+# Format: postgresql://postgres:[PASSWORD]@[PROJECT-REF].supabase.co:5432/postgres
+# Note: Using POSTGRES_PRISMA_URL (Vercel's default) instead of DATABASE_URL
+POSTGRES_PRISMA_URL=your-supabase-database-url-here
 
 # Supabase Configuration
 SUPABASE_URL=your-supabase-url-here
@@ -42,7 +44,9 @@ GOOGLE_CLIENT_ID=your-google-client-id-here
 GOOGLE_CLIENT_SECRET=your-google-client-secret-here
 
 # Database - Supabase PostgreSQL
-DATABASE_URL=your-supabase-database-url-here
+# Format: postgresql://postgres:[PASSWORD]@[PROJECT-REF].supabase.co:5432/postgres
+# Note: Using POSTGRES_PRISMA_URL (Vercel's default) instead of DATABASE_URL
+POSTGRES_PRISMA_URL=your-supabase-database-url-here
 
 # Supabase Configuration
 SUPABASE_URL=your-supabase-url-here
@@ -126,9 +130,11 @@ If you get `OAUTH_CALLBACK_HANDLER_ERROR`:
 4. ✅ Don't set `NEXTAUTH_URL` for preview deployments
 
 ### Database Connection Issues
-1. ✅ Verify Supabase `DATABASE_URL` is correct
-2. ✅ Check Supabase connection limits
-3. ✅ Ensure database is accessible from Vercel's IP ranges
+1. ✅ Verify Supabase `POSTGRES_PRISMA_URL` format: `postgresql://postgres:[PASSWORD]@[PROJECT-REF].supabase.co:5432/postgres`
+2. ✅ Check that URL starts with `postgresql://` or `postgres://` (not `mysql://` or other protocols)
+3. ✅ Verify Supabase `POSTGRES_PRISMA_URL` is correct
+4. ✅ Check Supabase connection limits
+5. ✅ Ensure database is accessible from Vercel's IP ranges
 
 ## Security Considerations
 
