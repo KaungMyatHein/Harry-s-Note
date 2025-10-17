@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/auth/signin',
   },
-  debug: true, // Enable debug in production to see logs
+  debug: process.env.NODE_ENV === 'development', // Only enable debug in development
   logger: {
     error(code, metadata) {
       console.error('[NextAuth][error]', code, metadata)
@@ -45,7 +45,9 @@ export const authOptions: NextAuthOptions = {
       console.warn('[NextAuth][warn]', code)
     },
     debug(code, metadata) {
-      console.log('[NextAuth][debug]', code, metadata)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[NextAuth][debug]', code, metadata)
+      }
     }
   }
 }

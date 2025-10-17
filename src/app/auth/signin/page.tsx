@@ -1,21 +1,20 @@
 'use client'
 
-import { signIn, getSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { data: session, status } = useSession()
 
   useEffect(() => {
-    // Check if user is already signed in
-    getSession().then((session) => {
-      if (session) {
-        router.push('/dashboard')
-      }
-    })
-  }, [router])
+    // Check if user is already signed in using useSession instead of getSession
+    if (status === 'authenticated' && session) {
+      router.push('/dashboard')
+    }
+  }, [session, status, router])
 
   const handleGoogleSignIn = async () => {
     setLoading(true)
@@ -61,24 +60,20 @@ export default function SignIn() {
         console.log('[DEBUG] Redirecting to:', result.url)
         window.location.href = result.url
       } else if (result?.ok) {
-        console.log('[DEBUG] Sign in successful, checking session...')
-        const session = await getSession()
-        if (session) {
-          console.log('[DEBUG] Session found, redirecting to dashboard')
+        console.log('[DEBUG] Sign in successful, session will be updated automatically')
+        // No need to manually call getSession - useSession will update automatically
+        // Just redirect after a short delay to allow session to update
+        setTimeout(() => {
           router.push('/dashboard')
-        } else {
-          console.error('[DEBUG] No session found after successful sign in')
-        }
+        }, 1000)
       } else {
         console.log('[DEBUG] Unexpected result format:', result)
-        console.log('[DEBUG] Checking session anyway...')
-        const session = await getSession()
-        if (session) {
-          console.log('[DEBUG] Session found, redirecting to dashboard')
-          router.push('/dashboard')
-        } else {
-          console.error('[DEBUG] No session found after sign in attempt')
-        }
+        // Let useSession handle session detection automatically
+        setTimeout(() => {
+          if (session) {
+            router.push('/dashboard')
+          }
+        }, 1000)
       }
     } catch (error) {
       console.error('[DEBUG] Sign in error:', error)
