@@ -22,8 +22,9 @@ export default function SignIn() {
     try {
       console.log('[DEBUG] Starting Google sign in...')
       console.log('[DEBUG] Environment check:', {
-        hasGoogleClientId: !!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-        nextAuthUrl: process.env.NEXTAUTH_URL || 'not set'
+        hasGoogleClientId: 'GOOGLE_CLIENT_ID is server-side only - cannot check from client',
+        nextAuthUrl: 'NEXTAUTH_URL is server-side only - cannot check from client',
+        currentUrl: window.location.origin
       })
       
       const result = await signIn('google', { 
