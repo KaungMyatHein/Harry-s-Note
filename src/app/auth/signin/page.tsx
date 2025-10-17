@@ -20,12 +20,39 @@ export default function SignIn() {
   const handleGoogleSignIn = async () => {
     setLoading(true)
     try {
-      await signIn('google', { 
-        callbackUrl: '/dashboard',
-        redirect: true 
+      console.log('[DEBUG] Starting Google sign in...')
+      console.log('[DEBUG] Environment check:', {
+        hasGoogleClientId: !!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        nextAuthUrl: process.env.NEXTAUTH_URL || 'not set'
       })
+      
+      const result = await signIn('google', { 
+        callbackUrl: '/dashboard',
+        redirect: false // Change to false to handle the response manually
+      })
+      
+      console.log('[DEBUG] SignIn result:', result)
+      
+      if (result?.error) {
+        console.error('[DEBUG] SignIn error:', result.error)
+        alert(`Sign in failed: ${result.error}`)
+      } else if (result?.url) {
+        console.log('[DEBUG] Redirecting to:', result.url)
+        window.location.href = result.url
+      } else {
+        console.log('[DEBUG] No URL returned, checking session...')
+        // Check if we're already signed in
+        const session = await getSession()
+        if (session) {
+          console.log('[DEBUG] Session found, redirecting to dashboard')
+          router.push('/dashboard')
+        } else {
+          console.error('[DEBUG] No session found after sign in attempt')
+        }
+      }
     } catch (error) {
-      console.error('Sign in error:', error)
+      console.error('[DEBUG] Sign in error:', error)
+      alert(`Sign in failed: ${error}`)
     } finally {
       setLoading(false)
     }
