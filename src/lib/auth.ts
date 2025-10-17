@@ -17,11 +17,11 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async session({ session, user }) {
-      if (session.user) {
+      if (session?.user && user) {
         session.user.id = user.id
-        session.user.email = user.email
-        session.user.name = user.name
-        session.user.image = user.image
+        session.user.email = user.email || null
+        session.user.name = user.name || null
+        session.user.image = user.image || null
       }
       return session
     },
