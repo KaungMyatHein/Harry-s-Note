@@ -17,19 +17,10 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async session({ session, user }) {
-      console.log('[NextAuth] Session callback called:', { 
-        hasSession: !!session, 
-        hasUser: !!user,
-        sessionUser: session?.user ? 'exists' : 'null',
-        userId: user?.id || 'no-id'
-      })
-      
-      // Simply pass through the session - let NextAuth handle the rest
+      // Simplified session callback to prevent CLIENT_FETCH_ERROR
       if (session && user) {
         session.user.id = user.id
       }
-      
-      console.log('[NextAuth] Session callback completed')
       return session
     },
   },
