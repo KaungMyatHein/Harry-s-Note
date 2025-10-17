@@ -27,12 +27,32 @@ export default function SignIn() {
         currentUrl: window.location.origin
       })
       
+      console.log('[DEBUG] Calling signIn with provider: google')
       const result = await signIn('google', { 
         callbackUrl: '/dashboard',
         redirect: false // Change to false to handle the response manually
       })
       
+      console.log('[DEBUG] SignIn result type:', typeof result)
       console.log('[DEBUG] SignIn result:', result)
+      console.log('[DEBUG] SignIn result stringified:', JSON.stringify(result, null, 2))
+      
+      if (result === undefined) {
+        console.error('[DEBUG] SignIn returned undefined - this indicates a NextAuth configuration issue')
+        console.log('[DEBUG] Checking if NextAuth API route is accessible...')
+        
+        // Test if NextAuth API is working
+        try {
+          const response = await fetch('/api/auth/providers')
+          const providers = await response.json()
+          console.log('[DEBUG] Available providers:', providers)
+        } catch (fetchError) {
+          console.error('[DEBUG] Failed to fetch providers:', fetchError)
+        }
+        
+        alert('Sign in failed: NextAuth configuration issue. Check console for details.')
+        return
+      }
       
       if (result?.error) {
         console.error('[DEBUG] SignIn error:', result.error)
@@ -40,9 +60,18 @@ export default function SignIn() {
       } else if (result?.url) {
         console.log('[DEBUG] Redirecting to:', result.url)
         window.location.href = result.url
+      } else if (result?.ok) {
+        console.log('[DEBUG] Sign in successful, checking session...')
+        const session = await getSession()
+        if (session) {
+          console.log('[DEBUG] Session found, redirecting to dashboard')
+          router.push('/dashboard')
+        } else {
+          console.error('[DEBUG] No session found after successful sign in')
+        }
       } else {
-        console.log('[DEBUG] No URL returned, checking session...')
-        // Check if we're already signed in
+        console.log('[DEBUG] Unexpected result format:', result)
+        console.log('[DEBUG] Checking session anyway...')
         const session = await getSession()
         if (session) {
           console.log('[DEBUG] Session found, redirecting to dashboard')
@@ -53,6 +82,7 @@ export default function SignIn() {
       }
     } catch (error) {
       console.error('[DEBUG] Sign in error:', error)
+      console.error('[DEBUG] Error stack:', error instanceof Error ? error.stack : 'No stack trace available')
       alert(`Sign in failed: ${error}`)
     } finally {
       setLoading(false)
